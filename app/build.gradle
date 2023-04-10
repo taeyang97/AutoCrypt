@@ -39,6 +39,8 @@ android {
 
 dependencies {
 
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation 'com.android.support.constraint:constraint-layout:2.0.4'
     def room_version = "2.5.1"
     def retrofit2_version = "2.9.0"
     def hilt_version = "2.44.2"
