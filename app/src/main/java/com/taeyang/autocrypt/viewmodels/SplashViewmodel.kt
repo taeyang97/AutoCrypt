@@ -2,7 +2,9 @@ package com.taeyang.autocrypt.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.taeyang.autocrypt.database.model.DBCenterData
 import com.taeyang.autocrypt.model.CenterData
+import com.taeyang.autocrypt.model.Data
 import com.taeyang.autocrypt.repository.CenterRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,6 +29,20 @@ class SplashViewmodel @Inject constructor(
         )
     }
 
-    suspend fun insertCenterData(){}
+    suspend fun insertCenters(centers: Data)= viewModelScope.launch {
+        val dbCenter = DBCenterData(
+            id = centers.id,
+            address = centers.address,
+            centerName = centers.centerName,
+            centerType = centers.centerType,
+            facilityName = centers.facilityName,
+            createdAt = centers.createdAt,
+            phoneNumber = centers.phoneNumber,
+            updatedAt = centers.updatedAt,
+            lat = centers.lat,
+            lng = centers.lng
+        )
+        centerRepository.insert(dbCenter)
+    }
 
 }

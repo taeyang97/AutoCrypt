@@ -1,5 +1,7 @@
 package com.taeyang.autocrypt.repository
 
+import com.taeyang.autocrypt.database.dao.CenterDao
+import com.taeyang.autocrypt.database.model.DBCenterData
 import com.taeyang.autocrypt.di.RetrofitInstance
 import com.taeyang.autocrypt.model.CenterData
 import kotlinx.coroutines.Dispatchers
@@ -12,7 +14,7 @@ import javax.inject.Singleton
 
 @Singleton
 class CenterRepository @Inject constructor(
-
+    private val centerDao: CenterDao
 ){
 
     suspend fun getBestAPI(
@@ -23,6 +25,9 @@ class CenterRepository @Inject constructor(
             .awaitResponse()
             .bodyOrThrow()
     }
+
+    suspend fun insert(centers: DBCenterData) = centerDao.insert(centers)
+
 }
 
 fun <T> Response<T>.bodyOrThrow(): T = if(isSuccessful) body()!! else throw HttpException(this)

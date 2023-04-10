@@ -1,6 +1,6 @@
 package com.taeyang.autocrypt.model
 
-data class InfoData(
+data class Data(
     val address: String = "",
     val centerName: String = "",
     val centerType: String = "",
