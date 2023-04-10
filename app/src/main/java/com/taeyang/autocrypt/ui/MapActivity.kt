@@ -13,6 +13,7 @@ import com.naver.maps.map.overlay.Overlay
 import com.naver.maps.map.util.FusedLocationSource
 import com.naver.maps.map.util.MarkerIcons
 import com.taeyang.autocrypt.R
+import com.taeyang.autocrypt.adapter.InfoAdapter
 import com.taeyang.autocrypt.databinding.ActivityMapBinding
 import com.taeyang.autocrypt.viewmodels.MapViewmodel
 import dagger.hilt.android.AndroidEntryPoint
@@ -54,10 +55,33 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             vm.center.collect{
                 if(it.isNotEmpty()){
                     it.forEach{ centerData ->
+
+                        val infoWindow = InfoWindow()
+                        infoWindow.adapter = InfoAdapter(this@MapActivity, centerData)
+
+                        val cameraUpdate = CameraUpdate.scrollTo(LatLng(centerData.lat.toDouble(), centerData.lng.toDouble()))
+                            .animate(CameraAnimation.Easing, 2000)
+                            .reason(1000)
+
+                        val listener = Overlay.OnClickListener { overlay ->
+                            val marker = overlay as Marker
+
+                            if (marker.infoWindow == null) {
+                                // 현재 마커에 정보 창이 열려있지 않을 경우 엶
+                                infoWindow.open(marker)
+                                naverMap.moveCamera(cameraUpdate)
+                            } else {
+                                // 이미 현재 마커에 정보 창이 열려있을 경우 닫음
+                                infoWindow.close()
+                            }
+                            true
+                        }
+
                         val marker = Marker()
                         marker.position = LatLng(centerData.lat.toDouble(), centerData.lng.toDouble())
                         marker.icon = MarkerIcons.BLACK
                         marker.iconTintColor = if(centerData.centerType == "지역") Color.RED else Color.BLACK
+                        marker.onClickListener = listener
                         marker.map = naverMap
                     }
                 }
