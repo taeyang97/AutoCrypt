@@ -22,6 +22,7 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
         buildConfigField "String", "API_KEY", localProperties['api_key']
+        manifestPlaceholders = [CLIENT_ID: localProperties['client_id']]
     }
 
     buildTypes {
