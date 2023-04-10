@@ -26,6 +26,7 @@ class CenterRepository @Inject constructor(
             .bodyOrThrow()
     }
 
+    suspend fun getCenters() = centerDao.getAll()
     suspend fun insert(centers: DBCenterData) = centerDao.insert(centers)
 
 }

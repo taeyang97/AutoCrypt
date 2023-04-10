@@ -1,13 +1,20 @@
 package com.taeyang.autocrypt.ui
 
+import android.graphics.Color
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import com.naver.maps.map.LocationTrackingMode
-import com.naver.maps.map.NaverMap
-import com.naver.maps.map.OnMapReadyCallback
+import androidx.lifecycle.lifecycleScope
+import com.naver.maps.geometry.LatLng
+import com.naver.maps.map.*
+import com.naver.maps.map.overlay.InfoWindow
+import com.naver.maps.map.overlay.Marker
+import com.naver.maps.map.overlay.Overlay
 import com.naver.maps.map.util.FusedLocationSource
+import com.naver.maps.map.util.MarkerIcons
 import com.taeyang.autocrypt.R
 import com.taeyang.autocrypt.databinding.ActivityMapBinding
+import com.taeyang.autocrypt.viewmodels.MapViewmodel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -20,6 +27,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var binding: ActivityMapBinding
     private lateinit var naverMap: NaverMap
     private lateinit var locationSource: FusedLocationSource
+
+    private val vm : MapViewmodel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_map)
@@ -38,6 +47,21 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         binding.myLocationBtn.setOnClickListener {
             naverMap.locationSource = locationSource
             naverMap.locationTrackingMode = LocationTrackingMode.Follow
+        }
+
+        lifecycleScope.launchWhenCreated {
+            vm.getDBCenterData()
+            vm.center.collect{
+                if(it.isNotEmpty()){
+                    it.forEach{ centerData ->
+                        val marker = Marker()
+                        marker.position = LatLng(centerData.lat.toDouble(), centerData.lng.toDouble())
+                        marker.icon = MarkerIcons.BLACK
+                        marker.iconTintColor = if(centerData.centerType == "지역") Color.RED else Color.BLACK
+                        marker.map = naverMap
+                    }
+                }
+            }
         }
     }
 
